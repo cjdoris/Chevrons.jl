@@ -1,4 +1,4 @@
-# Chevy.jl
+# >> Chevy.jl
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Test Status](https://github.com/cjdoris/Chevy.jl/actions/workflows/tests.yml/badge.svg)](https://github.com/cjdoris/Chevy.jl/actions/workflows/tests.yml)
@@ -68,7 +68,7 @@ quote
 end
 ```
 
-Furthermore, `@chevy` works recursively, so you can apply at at the top of a code block
+Furthermore, `@chevy` works recursively, so you can apply it at the top of a code block
 and the syntax is applied to the whole block, such as:
 ```julia
 @chevy module MyModule
@@ -147,10 +147,10 @@ This can be useful as a sort of "inline do-notation":
 julia> write("hello.txt", "ignore this line\nkeep this line!");
 
 julia> (
-       "hello.txt"
-       >> open()
-       << (io -> io >>> readline() >> read(String))
-       >> uppercase()
+           "hello.txt"
+           >> open()
+           << (io -> io >>> readline() >> read(String))
+           >> uppercase()
        )
 "KEEP THIS LINE!"
 ```
@@ -160,12 +160,12 @@ julia> (
 If you surround your pipelines with parentheses then you can place each transformation
 on a separate line for clarity. This also allows you to easily comment out transformations.
 
-```julia-repl
-julia> (
-         df
-         # >> @filter(age > 40)
-         >> @select(nchildren=children, age)
-       )
+```julia
+(
+    df
+    # >> @filter(age > 40)
+    >> @select(nchildren=children, age)
+)
 ```
 
 ## API
