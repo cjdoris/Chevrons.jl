@@ -4,6 +4,8 @@ authors = ["Christopher Doris <github.com/cjdoris>"]
 version = "0.1.0"
 
 [deps]
+julia = "1.9"
+
 [compat]
 Aqua = "0 - 999"
 DataFrameMacros = "0 - 999"
