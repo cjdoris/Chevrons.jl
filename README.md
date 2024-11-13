@@ -7,8 +7,9 @@
 Your `friendly >> chevron >> based` syntax for piping data through multiple
 transformations.
 
-All the good ideas from [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) and
-[Pipe.jl](https://github.com/oxinabox/Pipe.jl) but with nicer syntax and REPL integration.
+A [Julia](https://julialang.org/) package with all the good ideas from
+[Chain.jl](https://github.com/jkrumbiegel/Chain.jl) and
+[Pipe.jl](https://github.com/oxinabox/Pipe.jl), but with nicer syntax and REPL integration.
 
 Here is a simple example:
 ```julia-repl
@@ -78,13 +79,13 @@ and the syntax is applied to the whole block, such as:
 end
 ```
 
-If you are using the Julia REPL, you can activate Chevy's REPL mode like
+If you are using the Julia REPL, you can activate Chevy's REPL integration like
 ```julia-repl
 julia> Chevy.enable_repl()
 ```
 This allows you to use this syntax from the Julia REPL without typing `@chevy` every
 time. Use `Chevy.enable_repl(false)` to disable it again. The rest of the examples here
-will be from the REPL mode.
+will be from the REPL.
 
 ### Basic piping syntax with `>>`
 
@@ -161,7 +162,7 @@ If you surround your pipelines with parentheses then you can place each transfor
 on a separate line for clarity. This also allows you to easily comment out transformations.
 
 ```julia
-(
+@chevy(
     df
     # >> @filter(age > 40)
     >> @select(nchildren=children, age)
