@@ -32,12 +32,12 @@ Transforms an expression exactly the way [`@chevy`](@ref) does.
 """
 function chevy(ex)
     if (
-            ex isa Expr &&
-                ex.head == :call &&
-                length(ex.args) == 3 &&
-                ex.args[1] isa Symbol &&
-                ex.args[1] in (:<<, :>>, :>>>)
-        )
+        ex isa Expr &&
+        ex.head == :call &&
+        length(ex.args) == 3 &&
+        ex.args[1] isa Symbol &&
+        ex.args[1] in (:<<, :>>, :>>>)
+    )
         # found a (lhs >> rhs) or (lhs << rhs) or (lhs >>> rhs) expression
         op, lhs, rhs = ex.args
         # recurse on lhs and rhs
@@ -58,7 +58,7 @@ function chevy(ex)
         # tmp = lhs2
         # If lhs2 is a block then flatten it out so the resulting expression is easier to read.
         if lhs2 isa Expr && lhs2.head == :block && length(lhs2.args) ≥ 1
-            append!(ans.args, lhs2.args[1:(end - 1)])
+            append!(ans.args, lhs2.args[1:(end-1)])
             push!(ans.args, Expr(:(=), tmp, lhs2.args[end]))
         else
             push!(ans.args, Expr(:(=), tmp, lhs2))
@@ -195,7 +195,7 @@ function sub(x, f, v::Symbol, multi::Bool = false)
     end
     # blocks - recurse into last expression
     if f isa Expr && f.head == :block && length(f.args) ≥ 1
-        return Expr(:block, f.args[1:(end - 1)]..., sub(x, f.args[end], v))
+        return Expr(:block, f.args[1:(end-1)]..., sub(x, f.args[end], v))
     end
     # give up
     error(

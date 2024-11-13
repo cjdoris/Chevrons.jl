@@ -12,45 +12,36 @@ end
 @testitem "DataFrames" setup = [Data] begin
     using DataFrames
     @test @chevy(
-        Data.df1
-            >> subset(:age => age -> age .> 40)
-            >> select(:children => :number_of_children, :age)
+        Data.df1 >> subset(:age => age -> age .> 40) >>
+        select(:children => :number_of_children, :age)
     ) == Data.df1b
 end
 
 @testitem "DataFramesMeta" setup = [Data] begin
     using DataFramesMeta
     @test @chevy(
-        Data.df1
-            >> @subset(:age .> 40)
-            >> @select(:number_of_children = :children, :age)
+        Data.df1 >> @subset(:age .> 40) >> @select(:number_of_children = :children, :age)
     ) == Data.df1b
 end
 
 @testitem "DataFrameMacros" setup = [Data] begin
     using DataFrameMacros
     @test @chevy(
-        Data.df1
-            >> @subset(:age > 40)
-            >> @select(:number_of_children = :children, :age)
+        Data.df1 >> @subset(:age > 40) >> @select(:number_of_children = :children, :age)
     ) == Data.df1b
 end
 
 @testitem "TidierData" setup = [Data] begin
     using TidierData
     @test @chevy(
-        Data.df1
-            >> @filter(age > 40)
-            >> @select(number_of_children = children, age)
+        Data.df1 >> @filter(age > 40) >> @select(number_of_children = children, age)
     ) == Data.df1b
 end
 
 @testitem "Query" setup = [Data] begin
     using DataFrames, Query
     @test @chevy(
-        Data.df1
-            >> @filter(_.age > 40)(_)
-            >> @map({number_of_children = _.children, _.age})(_)
-            >> DataFrame()
+        Data.df1 >> @filter(_.age > 40)(_) >>
+        @map({number_of_children = _.children, _.age})(_) >> DataFrame()
     ) == Data.df1b
 end
