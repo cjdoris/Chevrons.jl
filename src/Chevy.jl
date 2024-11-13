@@ -199,7 +199,7 @@ function sub(x, f, v::Symbol, multi::Bool = false)
     end
     # give up
     error(
-        "Chevy cannot substitute into `$((f))`; expecting `$v` or a function/macro call, indexing or property access.",
+        "Chevy cannot substitute into `$(truncate(f))`; expecting `$v` or a function/macro call, indexing or property access.",
     )
 end
 
