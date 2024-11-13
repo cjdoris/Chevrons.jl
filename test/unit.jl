@@ -84,6 +84,14 @@ end
         end
         @assert Chevy.tmp_index[] == 0
     end
+
+    # syntax errors
+    @testset "$input" for input in [@ex(x >> y), @ex(x >> [1, 2, 3])]
+        @test_throws(
+            r"Chevy cannot substitute into `.*`; expecting `_` or a function/macro call, indexing or property access.",
+            chevy(input)
+        )
+    end
 end
 
 @testitem "@chevy" begin
