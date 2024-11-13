@@ -4,7 +4,7 @@ Your `friendly >> chevron >> based` syntax for piping data through multiple
 transformations.
 
 All the good ideas from [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) and
-[Pipe.jl](https://github.com/oxinabox/Pipe.jl) with nicer syntax and REPL integration.
+[Pipe.jl](https://github.com/oxinabox/Pipe.jl) but with nicer syntax and REPL integration.
 
 Here is a simple example:
 ```julia-repl
@@ -21,13 +21,13 @@ julia> df = DataFrame(name=["John", "Sally", "Roger"], age=[54, 34, 79], childre
    2 │ Sally      34         2
    3 │ Roger      79         4
 
-julia> df >> @filter(age > 40) >> @select(nchildren=children, age)
+julia> df >> @filter(age > 40) >> @select(num_children=children, age)
 2×2 DataFrame
- Row │ nchildren  age
-     │ Int64      Int64
-─────┼──────────────────
-   1 │         0     54
-   2 │         4     79
+ Row │ num_children  age
+     │ Int64         Int64
+─────┼─────────────────────
+   1 │            0     54
+   2 │            4     79
 ```
 
 ## Installation
