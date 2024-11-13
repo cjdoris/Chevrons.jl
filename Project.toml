@@ -1,0 +1,29 @@
+name = "Chevy"
+uuid = "d9083b8b-98e7-4ee6-a2c7-6db47b61bf48"
+authors = ["Christopher Doris <github.com/cjdoris>"]
+version = "0.1.0"
+
+[deps]
+[compat]
+Aqua = "0 - 999"
+DataFrameMacros = "0 - 999"
+DataFrames = "0 - 999"
+DataFramesMeta = "0 - 999"
+Query = "0 - 999"
+Test = "0 - 999"
+TestItemRunner = "0 - 999"
+TidierData = "0 - 999"
+julia = "1"
+
+[extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+DataFrameMacros = "75880514-38bc-4a95-a458-c2aea5a3a702"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
+Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
+TidierData = "fe2206b3-d496-4ee9-a338-6a095c4ece80"
+
+[targets]
+test = ["Aqua", "DataFrames", "DataFramesMeta", "DataFrameMacros", "Query", "Test", "TestItemRunner", "TidierData"]
