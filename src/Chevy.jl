@@ -44,11 +44,9 @@ function chevy(ex)
         if op == :<<
             lhs2 = chevy(rhs)
             rhs2 = chevy(lhs)
-            var = :__
         else
             lhs2 = chevy(lhs)
             rhs2 = chevy(rhs)
-            var = :_
         end
         # construct an answer block
         ans = Expr(:block)
@@ -64,7 +62,7 @@ function chevy(ex)
             push!(ans.args, Expr(:(=), tmp, lhs2))
         end
         # substitute tmp into the rhs
-        subex = sub(tmp, rhs2, var, op == :>>>)
+        subex = sub(tmp, rhs2)
         # append this expression to the answer - again flattening if a block
         if subex isa Expr && subex.head == :block
             append!(ans.args, subex.args)
@@ -122,53 +120,43 @@ end
 
 is_not_chevy(x) = x !== chevy
 
-function recsub(x, f, v::Symbol, multi::Bool = false)
-    # directly substitute _
-    if f isa Symbol && f == v
-        return Some(x)
+function sub_placeholder(x, f)
+    # directly substitute _/__/___/etc
+    if f isa Symbol
+        fstr = String(f)
+        if fstr == "_"
+            return (x, true)
+        elseif !isempty(fstr) && all(==('_'), fstr)
+            return (Symbol(fstr[2:end]), false)
+        end
     end
-    # recursively substitute expressions, stopping at the first replacement
+    # recursively substitute expressions
     if f isa Expr
-        args = Any[nothing for _ in f.args]
-        if f.head == :call && length(f.args) ≥ 1
-            if length(f.args) ≥ 2 && f.args[2] isa Expr && f.args[2].head == :parameters
-                order = [3:length(f.args); 2; 1]
-            else
-                order = [2:length(f.args); 1]
-            end
-        else
-            order = 1:length(f.args)
+        args = []
+        done = false
+        for arg in f.args
+            arg2, done2 = sub_placeholder(x, arg)
+            done |= done2
+            push!(args, arg2)
         end
-        ok = false
-        for i in order
-            arg = f.args[i]
-            if ok && !multi
-                arg2 = arg
-            else
-                arg2 = recsub(x, arg, v, multi)
-                if arg2 === nothing
-                    arg2 = arg
-                else
-                    arg2 = something(arg2)
-                    ok = true
-                end
-            end
-            args[i] = arg2
-        end
-        if ok
-            return Expr(f.head, args...)
-        end
+        return (Expr(f.head, args...), done)
     end
-    return nothing
+    return (f, false)
 end
 
-function sub(x, f, v::Symbol, multi::Bool = false)
+function sub(x, f)
     # first try recursive substitution looking for the first placeholder
-    ans = recsub(x, f, v, multi)
-    if ans !== nothing
-        return something(ans)
+    f, done = sub_placeholder(x, f)
+    if done
+        # placeholder found, return the transformed expression
+        return f
+    else
+        # the placeholder was not found and we allow some special cases
+        return sub_specialcase(x, f)
     end
-    # at this point, the placeholder was not found and we allow some special cases
+end
+
+function sub_specialcase(x, f)
     # function calls - insert first arg
     if f isa Expr && f.head == :call && length(f.args) ≥ 1
         # f.args[1] is the function being called
@@ -179,6 +167,10 @@ function sub(x, f, v::Symbol, multi::Bool = false)
             return Expr(:call, f.args[1], x, f.args[2:end]...)
         end
     end
+    # do notation - recurse into function call
+    if f isa Expr && f.head == :do && length(f.args) ≥ 1
+        return Expr(:do, sub_specialcase(x, f.args[1]), f.args[2:end]...)
+    end
     # macro calls - insert first arg
     if f isa Expr && f.head == :macrocall && length(f.args) ≥ 2
         # f.args[1] is the macro being called
@@ -187,19 +179,19 @@ function sub(x, f, v::Symbol, multi::Bool = false)
     end
     # property access - recurse into LHS
     if f isa Expr && f.head == :. && length(f.args) ≥ 1
-        return Expr(:., sub(x, f.args[1], v), f.args[2:end]...)
+        return Expr(:., sub_specialcase(x, f.args[1]), f.args[2:end]...)
     end
     # indexing - recurse into LHS
     if f isa Expr && f.head == :ref && length(f.args) ≥ 1
-        return Expr(:ref, sub(x, f.args[1], v), f.args[2:end]...)
+        return Expr(:ref, sub_specialcase(x, f.args[1]), f.args[2:end]...)
     end
     # blocks - recurse into last expression
     if f isa Expr && f.head == :block && length(f.args) ≥ 1
-        return Expr(:block, f.args[1:(end-1)]..., sub(x, f.args[end], v))
+        return Expr(:block, f.args[1:(end-1)]..., sub_specialcase(x, f.args[end]))
     end
     # give up
     error(
-        "Chevy cannot substitute into `$(truncate(f))`; expecting `$v` or a function/macro call, indexing or property access.",
+        "Chevy cannot substitute into `$(truncate(f))`; expecting `_` or a function/macro call, indexing or property access.",
     )
 end
 

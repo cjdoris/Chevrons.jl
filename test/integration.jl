@@ -41,7 +41,7 @@ end
 @testitem "Query" setup = [Data] begin
     using DataFrames, Query
     @test @chevy(
-        Data.df1 >> @filter(_.age > 40)(_) >>
-        @map({number_of_children = _.children, _.age})(_) >> DataFrame()
+        Data.df1 >> @filter(__.age > 40)() >>
+        @map({number_of_children = __.children, __.age})() >> DataFrame()
     ) == Data.df1b
 end

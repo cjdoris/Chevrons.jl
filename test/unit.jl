@@ -46,10 +46,7 @@ end
         # simple <<
         (input = @ex(f() << x), output = @ex(tmp1 = x, f(tmp1))),
         (input = @ex(f(y, z; w = 3) << x), output = @ex(tmp1 = x, f(tmp1, y, z; w = 3))),
-        (
-            input = @ex(f(y, __, z; w = 3) << x),
-            output = @ex(tmp1 = x, f(y, tmp1, z; w = 3)),
-        ),
+        (input = @ex(f(y, _, z; w = 3) << x), output = @ex(tmp1 = x, f(y, tmp1, z; w = 3))),
         # combine >> <<
         (input = @ex(x >> f() << y), output = @ex(tmp2 = y, tmp1 = x, f(tmp2, tmp1))),
         # substitute the function being called
