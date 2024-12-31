@@ -71,6 +71,22 @@ end
         (input = @ex(x >> @m()), output = @ex(tmp1 = x, @m(tmp1))),
         (input = @ex(x >> @m(y, z)), output = @ex(tmp1 = x, @m(tmp1, y, z))),
         (input = @ex(x >> @m(y, _, z)), output = @ex(tmp1 = x, @m(y, tmp1, z))),
+        # do notation
+        (input = @ex(x >> f() do y
+            z
+        end), output = @ex(tmp1 = x, f(tmp1) do y
+            z
+        end)),
+        (input = @ex(x >> f(y, z) do a
+            b
+        end), output = @ex(tmp1 = x, f(tmp1, y, z) do a
+            b
+        end)),
+        (input = @ex(x >> f(y, _, z) do a
+            b
+        end), output = @ex(tmp1 = x, f(y, tmp1, z) do a
+            b
+        end)),
     ]
         @assert Chevy.tmp_index[] == 0
         Chevy.tmp_index[] = 1
