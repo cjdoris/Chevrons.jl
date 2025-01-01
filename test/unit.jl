@@ -47,8 +47,27 @@ end
         (input = @ex(f() << x), output = @ex(tmp1 = x, f(tmp1))),
         (input = @ex(f(y, z; w = 3) << x), output = @ex(tmp1 = x, f(tmp1, y, z; w = 3))),
         (input = @ex(f(y, _, z; w = 3) << x), output = @ex(tmp1 = x, f(y, tmp1, z; w = 3))),
+        # _, __, ___, etc
+        (input = @ex(x >> f(__, ___)), output = @ex(tmp1 = x, f(tmp1, _, __))),
+        (input = @ex(x >> f(__, ___, _)), output = @ex(tmp1 = x, f(_, __, tmp1))),
+        (
+            input = @ex(x >> f(__) >> g(___, _) >> h(_, __)),
+            output = @ex(tmp1 = x, tmp2 = f(tmp1, _), tmp3 = g(__, tmp2), h(tmp3, _))
+        ),
         # combine >> <<
         (input = @ex(x >> f() << y), output = @ex(tmp2 = y, tmp1 = x, f(tmp2, tmp1))),
+        (
+            input = @ex(x >> f(z, _) << y),
+            output = @ex(tmp2 = y, tmp1 = x, f(tmp2, z, tmp1))
+        ),
+        (
+            input = @ex(x >> f(z, __) << y),
+            output = @ex(tmp2 = y, tmp1 = x, f(tmp1, z, tmp2))
+        ),
+        (
+            input = @ex(x >> f(z, __, _) << y),
+            output = @ex(tmp2 = y, tmp1 = x, f(z, tmp2, tmp1))
+        ),
         # substitute the function being called
         (input = @ex(f >> _(x, y)), output = @ex(tmp1 = f, tmp1(x, y))),
         # infix calls
