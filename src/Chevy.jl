@@ -108,9 +108,22 @@ end
 Enable or disable REPL integration.
 
 When enabled, all commands in the REPL are transformed by [`chevy`](@ref).
+
+You can call this in your `startup.jl` file.
 """
 function enable_repl(on::Bool = true)
-    transforms = Base.active_repl_backend.ast_transforms
+    if isdefined(Base, :active_repl_backend) &&
+       isdefined(Base.active_repl_backend, :ast_transforms)
+        # if the repl is already active, modify it directly
+        transforms = Base.active_repl_backend.ast_transforms
+    elseif isdefined(Base, :REPL_MODULE_REF) &&
+           isassigned(Base.REPL_MODULE_REF) &&
+           isdefined(Base.REPL_MODULE_REF[], :repl_ast_transforms)
+        # if not, modify the list of default transforms
+        transforms = Base.REPL_MODULE_REF[].repl_ast_transforms
+    else
+        error("Cannot enable Chevy in the REPL.")
+    end
     filter!(is_not_chevy, transforms)
     if on
         pushfirst!(transforms, chevy)
