@@ -9,6 +9,7 @@ DataFrameMacros = "0 - 999"
 DataFrames = "0 - 999"
 DataFramesMeta = "0 - 999"
 Query = "0 - 999"
+REPL = "0 - 999"
 Test = "0 - 999"
 TestItemRunner = "0 - 999"
 TidierData = "0 - 999"
@@ -20,9 +21,10 @@ DataFrameMacros = "75880514-38bc-4a95-a458-c2aea5a3a702"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
+REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 TidierData = "fe2206b3-d496-4ee9-a338-6a095c4ece80"
 
 [targets]
-test = ["Aqua", "DataFrames", "DataFramesMeta", "DataFrameMacros", "Query", "Test", "TestItemRunner", "TidierData"]
+test = ["Aqua", "DataFrames", "DataFramesMeta", "DataFrameMacros", "Query", "REPL", "Test", "TestItemRunner", "TidierData"]

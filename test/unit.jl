@@ -144,39 +144,68 @@ end
 end
 
 @testitem "activate_repl" begin
-    orig_backend = try
-        Base.active_repl_backend
-    catch
-        nothing
-    end
-    mutable struct FakeBackend
-        ast_transforms::Vector{Any}
-    end
-    fake_backend = FakeBackend(Any[1, 2, 3])
-    @eval Base active_repl_backend = $fake_backend
-    ts = fake_backend.ast_transforms
-    @test ts == Any[1, 2, 3]
-    try
-        Chevy.enable_repl()
-        @test ts == Any[chevy, 1, 2, 3]
-        Chevy.enable_repl(false)
-        @test ts == Any[1, 2, 3]
-        Chevy.enable_repl(true)
-        @test ts == Any[chevy, 1, 2, 3]
-        Chevy.enable_repl()
-        @test ts == Any[chevy, 1, 2, 3]
-        Chevy.enable_repl(false)
-        @test ts == Any[1, 2, 3]
-        push!(ts, chevy)
-        @test ts == Any[1, 2, 3, chevy]
-        Chevy.enable_repl(false)
-        @test ts == Any[1, 2, 3]
-        @test ts == Any[1, 2, 3]
-        push!(ts, chevy)
-        @test ts == Any[1, 2, 3, chevy]
-        Chevy.enable_repl()
-        @test ts == Any[chevy, 1, 2, 3]
-    finally
-        @eval Base active_repl_backend = $orig_backend
+    using REPL
+    @testset "$case" for case in [:active, :default, :none]
+        orig_backend = try
+            Base.active_repl_backend
+        catch
+            nothing
+        end
+        orig_repl = try
+            Base.REPL_MODULE_REF[]
+        catch
+            nothing
+        end
+        mutable struct FakeBackend
+            ast_transforms::Vector{Any}
+        end
+        if case == :active
+            fake_backend = FakeBackend(Any[1, 2, 3])
+            fake_repl = REPL
+            ts = fake_backend.ast_transforms
+        elseif case == :default
+            fake_backend = nothing
+            fake_repl = Module(:FakeREPL)
+            @eval fake_repl repl_ast_transforms = Any[1, 2, 3]
+            ts = fake_repl.repl_ast_transforms
+        else
+            @assert case == :none
+            fake_backend = nothing
+            fake_repl = Module(:FakeREPL)
+            ts = nothing
+        end
+        @eval Base active_repl_backend = $fake_backend
+        Base.REPL_MODULE_REF[] = fake_repl
+        try
+            if case == :none
+                @test_throws r"Cannot enable Chevy in the REPL." Chevy.enable_repl()
+                @test_throws r"Cannot enable Chevy in the REPL." Chevy.enable_repl(true)
+                @test_throws r"Cannot enable Chevy in the REPL." Chevy.enable_repl(false)
+            else
+                @test ts == Any[1, 2, 3]
+                Chevy.enable_repl()
+                @test ts == Any[chevy, 1, 2, 3]
+                Chevy.enable_repl(false)
+                @test ts == Any[1, 2, 3]
+                Chevy.enable_repl(true)
+                @test ts == Any[chevy, 1, 2, 3]
+                Chevy.enable_repl()
+                @test ts == Any[chevy, 1, 2, 3]
+                Chevy.enable_repl(false)
+                @test ts == Any[1, 2, 3]
+                push!(ts, chevy)
+                @test ts == Any[1, 2, 3, chevy]
+                Chevy.enable_repl(false)
+                @test ts == Any[1, 2, 3]
+                @test ts == Any[1, 2, 3]
+                push!(ts, chevy)
+                @test ts == Any[1, 2, 3, chevy]
+                Chevy.enable_repl()
+                @test ts == Any[chevy, 1, 2, 3]
+            end
+        finally
+            @eval Base active_repl_backend = $orig_backend
+            Base.REPL_MODULE_REF[] = orig_repl
+        end
     end
 end
