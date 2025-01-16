@@ -37,11 +37,10 @@ julia> df >> @filter(age > 40) >> @select(num_children=children, age)
 
 ## Installation
 
-This is not a registered package (yet). You can install this package by clicking `]` to
-enter the Pkg REPL then do:
+Click `]` to enter the Pkg REPL then do:
 
 ```
-pkg> add https://github.com/cjdoris/Chevy.jl
+pkg> add Chevy
 ```
 
 ## Usage
@@ -170,8 +169,29 @@ julia> (
 
 ### Pro tips
 
+#### Wrap whole modules/scripts/functions
+
+The `@chevy` macro works recursively, meaning you can wrap an entire module/ (or script
+or function or any code block) and all `>>` expressions will be converted.
+
+For example here is the first example in this README converted to a script:
+
+```julia
+using Chevy, DataFrames, TidierData
+
+@chevy begin
+    df = DataFrame(name=["John", "Sally", "Roger"], age=[54, 34, 79], children=[0, 2, 4])
+    df2 = df >> @filter(age > 40) >> @select(num_children=children, age)
+    df2 >> println("data:", _)
+    df2 >> size >> println("size:", _)
+end
+```
+
+#### Parentheses
+
 If you surround your pipelines with parentheses then you can place each transformation
-on a separate line for clarity. This also allows you to easily comment out transformations.
+on a separate line for clarity. This also allows you to easily comment out individual
+transformations.
 
 ```julia
 @chevy (

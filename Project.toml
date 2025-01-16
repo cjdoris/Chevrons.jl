@@ -1,7 +1,7 @@
 name = "Chevy"
 uuid = "d9083b8b-98e7-4ee6-a2c7-6db47b61bf48"
 authors = ["Christopher Doris <github.com/cjdoris>"]
-version = "0.1.0"
+version = "1.0.0"
 
 [compat]
 Aqua = "0 - 999"
