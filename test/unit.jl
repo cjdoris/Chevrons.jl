@@ -107,14 +107,14 @@ end
             b
         end)),
     ]
-        @assert Chevy.tmp_index[] == 0
-        Chevy.tmp_index[] = 1
+        @assert Chevy.Internals.tmp_index[] == 0
+        Chevy.Internals.tmp_index[] = 1
         try
             @test chevy(case.input) == case.output
         finally
-            Chevy.tmp_index[] = 0
+            Chevy.Internals.tmp_index[] = 0
         end
-        @assert Chevy.tmp_index[] == 0
+        @assert Chevy.Internals.tmp_index[] == 0
     end
 
     # syntax errors

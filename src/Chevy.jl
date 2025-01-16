@@ -6,6 +6,16 @@ if VERSION ≥ v"1.11"
     eval(Expr(:public, :enable_repl))
 end
 
+function enable_repl end
+
+function chevy end
+
+macro chevy end
+
+module Internals
+
+import ..Chevy: enable_repl, chevy, @chevy
+
 const tmp_index = Ref(0)
 
 """
@@ -97,6 +107,10 @@ Also replaces `<<` in the other direction.
 - `f(y, z) << x` becomes `f(x, y, z)`
 - `f(y, __, z) << x` becomes `f(y, x, z)` (note the double underscore)
 - `x >> f(y) << z` becomes `f(z, x, y)`
+
+Also `>>>` can be used to keep the previous value.
+
+- `x >>> f() >> g()` becomes `tmp = x; f(tmp); g(tmp)`
 """
 macro chevy(ex)
     return esc(chevy(ex))
@@ -214,6 +228,8 @@ function truncate(ex)
     else
         ex
     end
+end
+
 end
 
 end # module Chevy
