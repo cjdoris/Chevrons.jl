@@ -156,13 +156,25 @@ julia> (
 "KEEP THIS LINE!"
 ```
 
+You can instead just use regular do-notation:
+```
+julia> (
+           "hello.txt"
+           >> open() do io
+               io >>> readline() >> read(String)
+           end
+           >> uppercase()
+       )
+"KEEP THIS LINE!"
+```
+
 ### Pro tips
 
 If you surround your pipelines with parentheses then you can place each transformation
 on a separate line for clarity. This also allows you to easily comment out transformations.
 
 ```julia
-@chevy(
+@chevy (
     df
     # >> @filter(age > 40)
     >> @select(nchildren=children, age)
@@ -175,13 +187,3 @@ See the docstrings for more help:
 - `@chevy ...`: Transform and executes the given code.
 - `chevy(expr)`: Transform the given expression.
 - `Chevy.enable_repl(on=true)`: Enable/disable the REPL integration.
-
-## Syntax summary
-
-| Input | Output | Comments |
-| ----- | ------ | -------- |
-| `x >> f(y)` | `f(x, y)` | Basic piping with `>>`. |
-| `x >> f(y, _)` | `f(y, x)` | `_` to specify argument location. |
-| `f(y) << x` | `f(x, y)` | Reverse piping with `<<`. |
-| `f(y, __) << x` | `f()` | `__` to specify argument location. |
-| `x >>> f(y)` | `tmp = x; f(x, y); tmp` | Pass a value through from a previous step. |
