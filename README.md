@@ -35,27 +35,26 @@ julia> df >> @filter(age > 40) >> @select(num_children=children, age)
    2 │            4     79
 ```
 
-Comparison with [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) and
-[Pipe.jl](https://github.com/oxinabox/Pipe.jl):
+Quick comparison with similar packages:
 
-| Feature | Chevy.jl | Chain.jl | Pipe.jl |
+| Feature | Chevy.jl | [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) | [Pipe.jl](https://github.com/oxinabox/Pipe.jl) |
 | --- | --- | --- | --- |
-| [Piping syntax](#getting-started) | ✔️ | ✔️ | ✔️ |
-| [Side effects](#side-effects-with-) | ✔️ | ✔️ | ❌ |
-| [Pipe backwards](#piping-backwards-with-) | ✔️ | ❌ | ❌ |
+| [Piping syntax](#getting-started) | ✔️ (`>>`) | ✔️ (`@chain`) | ✔️ (`|>`) |
+| [Side effects](#side-effects-with-) | ✔️ (`>>>`) | ✔️ (`@aside`) | ❌ |
+| [Pipe backwards](#piping-backwards-with-) | ✔️ (`<<`) | ❌ | ❌ |
 | [Recursive syntax](#recursive-usage) | ✔️ | ❌ | ❌ |
 | [REPL integration](#repl-integration) | ✔️ | ❌ | ❌ |
 | Line numbers on errors | ❌ | ✔️ | ❌ |
 
-## Installation
+## Usage
+
+### Installation
 
 Click `]` to enter the Pkg REPL then do:
 
 ```
 pkg> add Chevy
 ```
-
-## Usage
 
 ### Getting started
 
