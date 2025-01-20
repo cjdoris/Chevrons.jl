@@ -99,9 +99,6 @@ function chevy(ex)
             push!(ans.args, tmp)
         end
         return ans
-    elseif ex isa Expr && ex.head == :quote
-        # skip quote nodes
-        return ex
     elseif ex isa Expr
         # otherwise recurse into expressions
         return Expr(ex.head, map(chevy, ex.args)...)
