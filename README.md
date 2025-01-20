@@ -35,6 +35,18 @@ julia> df >> @filter(age > 40) >> @select(num_children=children, age)
    2 │            4     79
 ```
 
+Comparison with [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) and
+[Pipe.jl](https://github.com/oxinabox/Pipe.jl):
+
+| Feature | Chevy.jl | Chain.jl | Pipe.jl |
+| --- | --- | --- | --- |
+| [Piping syntax](#getting-started) | ✔️ | ✔️ | ✔️ |
+| [Side effects](#side-effects-with-) | ✔️ | ✔️ | ❌ |
+| [Pipe backwards](#piping-backwards-with-) | ✔️ | ❌ | ❌ |
+| [Recursive syntax](#recursive-usage) | ✔️ | ❌ | ❌ |
+| [REPL integration](#repl-integration) | ✔️ | ❌ | ❌ |
+| Line numbers on errors | ❌ | ✔️ | ❌ |
+
 ## Installation
 
 Click `]` to enter the Pkg REPL then do:
@@ -68,15 +80,7 @@ quote
 end
 ```
 
-Furthermore, `@chevy` works recursively, so you can apply it at the top of a code block
-and the syntax is applied to the whole block, such as:
-```julia
-@chevy module MyModule
-    function my_function()
-        return Int[] >> push!(5, 2, 4, 3, 1) >> sort!()
-    end
-end
-```
+### REPL integration
 
 If you are using the Julia REPL, you can activate Chevy's REPL integration like
 ```julia-repl
@@ -85,6 +89,8 @@ julia> Chevy.enable_repl()
 This allows you to use this syntax from the Julia REPL without typing `@chevy` every
 time. Use `Chevy.enable_repl(false)` to disable it again. The rest of the examples here
 will be from the REPL.
+
+Also see [this tip](#startup-file) for automatically enabling the REPL integration.
 
 ### Basic piping syntax with `>>`
 
@@ -167,12 +173,10 @@ julia> (
 "KEEP THIS LINE!"
 ```
 
-### Pro tips
+### Recursive usage
 
-#### Wrap whole modules/scripts/functions
-
-The `@chevy` macro works recursively, meaning you can wrap an entire module/ (or script
-or function or any code block) and all `>>` expressions will be converted.
+The `@chevy` macro works recursively, meaning you can wrap an entire module (or script
+or function or any code block) and all `>>`/`>>>`/`<<` expressions will be converted.
 
 For example here is the first example in this README converted to a script:
 
@@ -186,6 +190,14 @@ using Chevy, DataFrames, TidierData
     df2 >> size >> println("size:", _)
 end
 ```
+
+Or the data manipulation step can be encapsulated as a function like so:
+
+```julia
+@chevy munge(df) = df >> @filter(age > 40) >> @select(num_children=children, age)
+```
+
+### Pro tips
 
 #### Parentheses
 
