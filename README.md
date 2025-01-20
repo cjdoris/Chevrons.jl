@@ -39,7 +39,7 @@ Quick comparison with similar packages:
 
 | Feature | Chevy.jl | [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) | [Pipe.jl](https://github.com/oxinabox/Pipe.jl) |
 | --- | --- | --- | --- |
-| [Piping syntax](#getting-started) | ✔️ (`>>`) | ✔️ (`@chain`) | ✔️ (`|>`) |
+| [Piping syntax](#getting-started) | ✔️ (`>>`) | ✔️ (`@chain`) | ✔️ (`\|>`) |
 | [Side effects](#side-effects-with-) | ✔️ (`>>>`) | ✔️ (`@aside`) | ❌ |
 | [Pipe backwards](#piping-backwards-with-) | ✔️ (`<<`) | ❌ | ❌ |
 | [Recursive syntax](#recursive-usage) | ✔️ | ❌ | ❌ |
