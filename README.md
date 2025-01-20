@@ -227,7 +227,7 @@ Or you can use `>>(x, y, z)` syntax instead of `x >> y >> z` like so:
 You can add the following lines to your `startup.jl` file (usually at
 `~/.julia/config/startup.jl`) to enable Chevy's REPL integration automatically:
 
-```
+```julia
 if isinteractive()
     try
         using Chevy
@@ -246,6 +246,6 @@ always be available at the REPL.
 ## API
 
 See the docstrings for more help:
-- `@chevy ...`: Transform and executes the given code.
+- `@chevy ...`: Transform and execute the given code.
 - `chevy(expr)`: Transform the given expression.
 - `Chevy.enable_repl(on=true)`: Enable/disable the REPL integration.
