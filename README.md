@@ -201,6 +201,37 @@ transformations.
 )
 ```
 
+Or you can use `>>(x, y, z)` syntax instead of `x >> y >> z` like so:
+
+```julia
+@chevy >>(
+    df,
+    # @filter(age > 40),
+    @select(nchildren=children, age),
+)
+```
+
+#### Startup file
+
+You can add the following lines to your `startup.jl` file (usually at
+`~/.julia/config/startup.jl`) to enable Chevy's REPL integration automatically:
+
+```
+if isinteractive()
+    try
+        using Chevy
+    catch
+        @warn "Chevy not available"
+    end
+    if @isdefined Chevy
+        Chevy.enable_repl()
+    end
+end
+```
+
+Chevy has no dependencies so is safe to add to your global environment - then it will
+always be available at the REPL.
+
 ## API
 
 See the docstrings for more help:

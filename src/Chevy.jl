@@ -44,12 +44,27 @@ function chevy(ex)
     if (
         ex isa Expr &&
         ex.head == :call &&
-        length(ex.args) == 3 &&
+        length(ex.args) ≥ 1 &&
         ex.args[1] isa Symbol &&
         ex.args[1] in (:<<, :>>, :>>>)
     )
-        # found a (lhs >> rhs) or (lhs << rhs) or (lhs >>> rhs) expression
-        op, lhs, rhs = ex.args
+        nargs = length(ex.args)
+        if nargs == 1
+            # nullary `>>()` not allowed
+            error("Chevy cannot handle zero-argument `$ex`")
+        elseif nargs == 2
+            # unary `>>(x)` is just `@chevy(x)`
+            return chevy(ex.args[2])
+        elseif nargs == 3
+            # binary (lhs >> rhs) or (lhs << rhs) or (lhs >>> rhs) expression
+            op, lhs, rhs = ex.args
+        else
+            # parse `>>(x, y, z)` as `(x >> y) >> z` (same as `x >> y >> z`)
+            @assert nargs ≥ 4
+            op = ex.args[1]
+            lhs = Expr(:call, op, ex.args[2:end-1]...)
+            rhs = ex.args[end]
+        end
         # recurse on lhs and rhs
         if op == :<<
             lhs2 = chevy(rhs)
@@ -84,6 +99,9 @@ function chevy(ex)
             push!(ans.args, tmp)
         end
         return ans
+    elseif ex isa Expr && ex.head == :quote
+        # skip quote nodes
+        return ex
     elseif ex isa Expr
         # otherwise recurse into expressions
         return Expr(ex.head, map(chevy, ex.args)...)

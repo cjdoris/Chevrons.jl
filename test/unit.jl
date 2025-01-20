@@ -106,6 +106,15 @@ end
         end), output = @ex(tmp1 = x, f(y, tmp1, z) do a
             b
         end)),
+        # unary >>(x) etc
+        (input = @ex(>>(x >> f())), output = @ex(tmp1 = x, f(tmp1))),
+        (input = @ex(<<(x >> f())), output = @ex(tmp1 = x, f(tmp1))),
+        (input = @ex(>>>(x >> f())), output = @ex(tmp1 = x, f(tmp1))),
+        # more than two args >>(x, y, z) etc
+        (
+            input = @ex(>>(x, f(y), g(z, _))),
+            output = @ex(tmp1 = x, tmp2 = f(tmp1, y), g(z, tmp2))
+        ),
     ]
         @assert Chevy.Internals.tmp_index[] == 0
         Chevy.Internals.tmp_index[] = 1
@@ -123,6 +132,11 @@ end
             r"Chevy cannot substitute into `.*`; expecting `_` or a function/macro call, indexing or property access.",
             chevy(input)
         )
+    end
+
+    # nullary calls
+    @testset "$input" for input in [@ex(>>()), @ex(<<()), @ex(>>>())]
+        @test_throws(r"Chevy cannot handle zero-argument `.*`", chevy(input))
     end
 end
 
