@@ -1,6 +1,6 @@
-module Chevy
+module Chevrons
 
-export chevy, @chevy
+export chevrons, @chevrons
 
 if VERSION ≥ v"1.11"
     eval(Expr(:public, :enable_repl))
@@ -8,13 +8,13 @@ end
 
 function enable_repl end
 
-function chevy end
+function chevrons end
 
-macro chevy end
+macro chevrons end
 
 module Internals
 
-import ..Chevy: enable_repl, chevy, @chevy
+import ..Chevrons: enable_repl, chevrons, @chevrons
 
 const tmp_index = Ref(0)
 
@@ -31,16 +31,16 @@ function tmpsym()
         tmp_index[] = i + 1
         Symbol(:tmp, i)
     else
-        gensym(:chevy)
+        gensym(:chevrons)
     end
 end
 
 """
-    chevy(ex)
+    chevrons(ex)
 
-Transforms an expression exactly the way [`@chevy`](@ref) does.
+Transforms an expression exactly the way [`@chevrons`](@ref) does.
 """
-function chevy(ex)
+function chevrons(ex)
     if (
         ex isa Expr &&
         ex.head == :call &&
@@ -51,10 +51,10 @@ function chevy(ex)
         nargs = length(ex.args)
         if nargs == 1
             # nullary `>>()` not allowed
-            error("Chevy cannot handle zero-argument `$ex`")
+            error("Chevrons cannot handle zero-argument `$ex`")
         elseif nargs == 2
-            # unary `>>(x)` is just `@chevy(x)`
-            return chevy(ex.args[2])
+            # unary `>>(x)` is just `@chevrons(x)`
+            return chevrons(ex.args[2])
         elseif nargs == 3
             # binary (lhs >> rhs) or (lhs << rhs) or (lhs >>> rhs) expression
             op, lhs, rhs = ex.args
@@ -67,11 +67,11 @@ function chevy(ex)
         end
         # recurse on lhs and rhs
         if op == :<<
-            lhs2 = chevy(rhs)
-            rhs2 = chevy(lhs)
+            lhs2 = chevrons(rhs)
+            rhs2 = chevrons(lhs)
         else
-            lhs2 = chevy(lhs)
-            rhs2 = chevy(rhs)
+            lhs2 = chevrons(lhs)
+            rhs2 = chevrons(rhs)
         end
         # construct an answer block
         ans = Expr(:block)
@@ -101,7 +101,7 @@ function chevy(ex)
         return ans
     elseif ex isa Expr
         # otherwise recurse into expressions
-        return Expr(ex.head, map(chevy, ex.args)...)
+        return Expr(ex.head, map(chevrons, ex.args)...)
     else
         # otherwise no-op
         return ex
@@ -109,7 +109,7 @@ function chevy(ex)
 end
 
 """
-    @chevy ex
+    @chevrons ex
 
 Recursively replace `>>` chained function calls.
 
@@ -127,8 +127,8 @@ Also `>>>` can be used to keep the previous value.
 
 - `x >>> f() >> g()` becomes `tmp = x; f(tmp); g(tmp)`
 """
-macro chevy(ex)
-    return esc(chevy(ex))
+macro chevrons(ex)
+    return esc(chevrons(ex))
 end
 
 """
@@ -136,7 +136,7 @@ end
 
 Enable or disable REPL integration.
 
-When enabled, all commands in the REPL are transformed by [`chevy`](@ref).
+When enabled, all commands in the REPL are transformed by [`chevrons`](@ref).
 
 You can call this in your `startup.jl` file.
 """
@@ -151,16 +151,16 @@ function enable_repl(on::Bool = true)
         # if not, modify the list of default transforms
         transforms = Base.REPL_MODULE_REF[].repl_ast_transforms
     else
-        error("Cannot enable Chevy in the REPL.")
+        error("Cannot enable Chevrons in the REPL.")
     end
-    filter!(is_not_chevy, transforms)
+    filter!(is_not_chevrons, transforms)
     if on
-        pushfirst!(transforms, chevy)
+        pushfirst!(transforms, chevrons)
     end
     return
 end
 
-is_not_chevy(x) = x !== chevy
+is_not_chevrons(x) = x !== chevrons
 
 function sub_placeholder(x, f)
     # directly substitute _/__/___/etc
@@ -233,7 +233,7 @@ function sub_specialcase(x, f)
     end
     # give up
     error(
-        "Chevy cannot substitute into `$(truncate(f))`; expecting `_` or a function/macro call, indexing or property access.",
+        "Chevrons cannot substitute into `$(truncate(f))`; expecting `_` or a function/macro call, indexing or property access.",
     )
 end
 
@@ -247,4 +247,4 @@ end
 
 end
 
-end # module Chevy
+end # module Chevrons

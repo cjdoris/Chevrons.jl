@@ -1,8 +1,8 @@
-# » Chevy.jl
+# » Chevrons.jl
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![Test Status](https://github.com/cjdoris/Chevy.jl/actions/workflows/tests.yml/badge.svg)](https://github.com/cjdoris/Chevy.jl/actions/workflows/tests.yml)
-[![Codecov](https://codecov.io/gh/cjdoris/Chevy.jl/branch/main/graph/badge.svg?token=1flP5128hZ)](https://codecov.io/gh/cjdoris/Chevy.jl)
+[![Test Status](https://github.com/cjdoris/Chevrons.jl/actions/workflows/tests.yml/badge.svg)](https://github.com/cjdoris/Chevrons.jl/actions/workflows/tests.yml)
+[![Codecov](https://codecov.io/gh/cjdoris/Chevrons.jl/branch/main/graph/badge.svg?token=1flP5128hZ)](https://codecov.io/gh/cjdoris/Chevrons.jl)
 
 Your `friendly >> chevron >> based` syntax for piping data through multiple
 transformations.
@@ -13,9 +13,9 @@ A [Julia](https://julialang.org/) package with all the good ideas from
 
 Here is a simple example:
 ```julia-repl
-julia> using Chevy, DataFrames, TidierData
+julia> using Chevrons, DataFrames, TidierData
 
-julia> Chevy.enable_repl()  # magic to enable Chevy syntax in the REPL
+julia> Chevrons.enable_repl()  # magic to enable Chevrons syntax in the REPL
 
 julia> df = DataFrame(name=["John", "Sally", "Roger"], age=[54, 34, 79], children=[0, 2, 4])
 3×3 DataFrame
@@ -37,7 +37,7 @@ julia> df >> @filter(age > 40) >> @select(num_children=children, age)
 
 Quick comparison with similar packages:
 
-| Feature | Chevy.jl | [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) | [Pipe.jl](https://github.com/oxinabox/Pipe.jl) |
+| Feature | Chevrons.jl | [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) | [Pipe.jl](https://github.com/oxinabox/Pipe.jl) |
 | --- | --- | --- | --- |
 | [Piping syntax](#getting-started) | ✔️ (`>>`) | ✔️ (`@chain`) | ✔️ (`\|>`) |
 | [Side effects](#side-effects-with-) | ✔️ (`>>>`) | ✔️ (`@aside`) | ❌ |
@@ -53,15 +53,15 @@ Quick comparison with similar packages:
 Click `]` to enter the Pkg REPL then do:
 
 ```
-pkg> add Chevy
+pkg> add Chevrons
 ```
 
 ### Getting started
 
-Chevy exports a macro `@chevy` which transforms expressions like `x >> f(y, z)` into
+Chevrons exports a macro `@chevrons` which transforms expressions like `x >> f(y, z)` into
 `f(x, y, z)`. These can be chained together, so that
 ```julia
-@chevy Int[] >> push!(5, 2, 4, 3, 1) >> sort!()
+@chevrons Int[] >> push!(5, 2, 4, 3, 1) >> sort!()
 ```
 is equivalent to
 ```julia
@@ -71,22 +71,22 @@ sort!(push!(Int[], 5, 2, 4, 3, 1))
 In fact we can see exactly what it is transformed to with `@macroexpand`. This is
 equivalent code but with intermediate results saved for clarity.
 ```julia-repl
-julia> @macroexpand @chevy Int[] >> push!(5, 2, 4, 3, 1) >> sort!()
+julia> @macroexpand @chevrons Int[] >> push!(5, 2, 4, 3, 1) >> sort!()
 quote
-    var"##chevy#241" = Int[]
-    var"##chevy#242" = push!(var"##chevy#241", 5, 2, 4, 3, 1)
-    sort!(var"##chevy#242")
+    var"##chevrons#241" = Int[]
+    var"##chevrons#242" = push!(var"##chevrons#241", 5, 2, 4, 3, 1)
+    sort!(var"##chevrons#242")
 end
 ```
 
 ### REPL integration
 
-If you are using the Julia REPL, you can activate Chevy's REPL integration like
+If you are using the Julia REPL, you can activate Chevrons's REPL integration like
 ```julia-repl
-julia> Chevy.enable_repl()
+julia> Chevrons.enable_repl()
 ```
-This allows you to use this syntax from the Julia REPL without typing `@chevy` every
-time. Use `Chevy.enable_repl(false)` to disable it again. The rest of the examples here
+This allows you to use this syntax from the Julia REPL without typing `@chevrons` every
+time. Use `Chevrons.enable_repl(false)` to disable it again. The rest of the examples here
 will be from the REPL.
 
 Also see [this tip](#startup-file) for automatically enabling the REPL integration.
@@ -174,15 +174,15 @@ julia> (
 
 ### Recursive usage
 
-The `@chevy` macro works recursively, meaning you can wrap an entire module (or script
+The `@chevrons` macro works recursively, meaning you can wrap an entire module (or script
 or function or any code block) and all `>>`/`>>>`/`<<` expressions will be converted.
 
 For example here is the first example in this README converted to a script:
 
 ```julia
-using Chevy, DataFrames, TidierData
+using Chevrons, DataFrames, TidierData
 
-@chevy begin
+@chevrons begin
     df = DataFrame(name=["John", "Sally", "Roger"], age=[54, 34, 79], children=[0, 2, 4])
     df2 = df >> @filter(age > 40) >> @select(num_children=children, age)
     df2 >> println("data:", _)
@@ -193,7 +193,7 @@ end
 Or the data manipulation step can be encapsulated as a function like so:
 
 ```julia
-@chevy munge(df) = df >> @filter(age > 40) >> @select(num_children=children, age)
+@chevrons munge(df) = df >> @filter(age > 40) >> @select(num_children=children, age)
 ```
 
 ### Pro tips
@@ -205,17 +205,17 @@ on a separate line for clarity. This also allows you to easily comment out indiv
 transformations.
 
 ```julia
-@chevy (
+@chevrons (
     df
     # >> @filter(age > 40)
-    >> @select(nchildren=children, age)
+    >> @select(nchildren=children, age),
 )
 ```
 
 Or you can use `>>(x, y, z)` syntax instead of `x >> y >> z` like so:
 
 ```julia
-@chevy >>(
+@chevrons >>(
     df,
     # @filter(age > 40),
     @select(nchildren=children, age),
@@ -225,27 +225,27 @@ Or you can use `>>(x, y, z)` syntax instead of `x >> y >> z` like so:
 #### Startup file
 
 You can add the following lines to your `startup.jl` file (usually at
-`~/.julia/config/startup.jl`) to enable Chevy's REPL integration automatically:
+`~/.julia/config/startup.jl`) to enable Chevrons's REPL integration automatically:
 
 ```julia
 if isinteractive()
     try
-        using Chevy
+        using Chevrons
     catch
-        @warn "Chevy not available"
+        @warn "Chevrons not available"
     end
-    if @isdefined Chevy
-        Chevy.enable_repl()
+    if @isdefined Chevrons
+        Chevrons.enable_repl()
     end
 end
 ```
 
-Chevy has no dependencies so is safe to add to your global environment - then it will
+Chevrons has no dependencies so is safe to add to your global environment - then it will
 always be available at the REPL.
 
 ## API
 
 See the docstrings for more help:
-- `@chevy ...`: Transform and execute the given code.
-- `chevy(expr)`: Transform the given expression.
-- `Chevy.enable_repl(on=true)`: Enable/disable the REPL integration.
+- `@chevrons ...`: Transform and execute the given code.
+- `chevrons(expr)`: Transform the given expression.
+- `Chevrons.enable_repl(on=true)`: Enable/disable the REPL integration.

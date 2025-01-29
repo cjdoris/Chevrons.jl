@@ -1,4 +1,4 @@
 @testitem "Aqua" begin
     using Aqua
-    Aqua.test_all(Chevy)
+    Aqua.test_all(Chevrons)
 end

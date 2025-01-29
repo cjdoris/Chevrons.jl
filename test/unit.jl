@@ -18,7 +18,7 @@
     end
 end
 
-@testitem "chevy" setup = [Helpers] begin
+@testitem "chevrons" setup = [Helpers] begin
     using .Helpers: @ex
     @testset "$(case.input)" for case in [
         # noop
@@ -116,42 +116,42 @@ end
             output = @ex(tmp1 = x, tmp2 = f(tmp1, y), g(z, tmp2))
         ),
     ]
-        @assert Chevy.Internals.tmp_index[] == 0
-        Chevy.Internals.tmp_index[] = 1
+        @assert Chevrons.Internals.tmp_index[] == 0
+        Chevrons.Internals.tmp_index[] = 1
         try
-            @test chevy(case.input) == case.output
+            @test chevrons(case.input) == case.output
         finally
-            Chevy.Internals.tmp_index[] = 0
+            Chevrons.Internals.tmp_index[] = 0
         end
-        @assert Chevy.Internals.tmp_index[] == 0
+        @assert Chevrons.Internals.tmp_index[] == 0
     end
 
     # syntax errors
     @testset "$input" for input in [@ex(x >> y), @ex(x >> [1, 2, 3])]
         @test_throws(
-            r"Chevy cannot substitute into `.*`; expecting `_` or a function/macro call, indexing or property access.",
-            chevy(input)
+            r"Chevrons cannot substitute into `.*`; expecting `_` or a function/macro call, indexing or property access.",
+            chevrons(input)
         )
     end
 
     # nullary calls
     @testset "$input" for input in [@ex(>>()), @ex(<<()), @ex(>>>())]
-        @test_throws(r"Chevy cannot handle zero-argument `.*`", chevy(input))
+        @test_throws(r"Chevrons cannot handle zero-argument `.*`", chevrons(input))
     end
 end
 
-@testitem "@chevy" begin
-    # most testing happens in the "chevy" test
+@testitem "@chevrons" begin
+    # most testing happens in the "chevrons" test
     @testset "basics" begin
-        @test @chevy(1 + 2) == 3
-        @test @chevy(Int[] >> push!(4, 2, 3, 5, 1) >> filter!(isodd, _) >> sort!()) ==
+        @test @chevrons(1 + 2) == 3
+        @test @chevrons(Int[] >> push!(4, 2, 3, 5, 1) >> filter!(isodd, _) >> sort!()) ==
               [1, 3, 5]
-        @test @chevy(10 >> (_ - __) << 1) == 9
+        @test @chevrons(10 >> (_ - __) << 1) == 9
     end
     @testset "side-effects" begin
         x = 0
         # can't put this inside @test because it introduces a new scope
-        y = @chevy(10 >>> (x = _) >> (x^2 - _))
+        y = @chevrons(10 >>> (x = _) >> (x^2 - _))
         @test y == 90
         @test x == 10
     end
@@ -192,30 +192,34 @@ end
         Base.REPL_MODULE_REF[] = fake_repl
         try
             if case == :none
-                @test_throws r"Cannot enable Chevy in the REPL." Chevy.enable_repl()
-                @test_throws r"Cannot enable Chevy in the REPL." Chevy.enable_repl(true)
-                @test_throws r"Cannot enable Chevy in the REPL." Chevy.enable_repl(false)
+                @test_throws r"Cannot enable Chevrons in the REPL." Chevrons.enable_repl()
+                @test_throws r"Cannot enable Chevrons in the REPL." Chevrons.enable_repl(
+                    true,
+                )
+                @test_throws r"Cannot enable Chevrons in the REPL." Chevrons.enable_repl(
+                    false,
+                )
             else
                 @test ts == Any[1, 2, 3]
-                Chevy.enable_repl()
-                @test ts == Any[chevy, 1, 2, 3]
-                Chevy.enable_repl(false)
+                Chevrons.enable_repl()
+                @test ts == Any[chevrons, 1, 2, 3]
+                Chevrons.enable_repl(false)
                 @test ts == Any[1, 2, 3]
-                Chevy.enable_repl(true)
-                @test ts == Any[chevy, 1, 2, 3]
-                Chevy.enable_repl()
-                @test ts == Any[chevy, 1, 2, 3]
-                Chevy.enable_repl(false)
+                Chevrons.enable_repl(true)
+                @test ts == Any[chevrons, 1, 2, 3]
+                Chevrons.enable_repl()
+                @test ts == Any[chevrons, 1, 2, 3]
+                Chevrons.enable_repl(false)
                 @test ts == Any[1, 2, 3]
-                push!(ts, chevy)
-                @test ts == Any[1, 2, 3, chevy]
-                Chevy.enable_repl(false)
+                push!(ts, chevrons)
+                @test ts == Any[1, 2, 3, chevrons]
+                Chevrons.enable_repl(false)
                 @test ts == Any[1, 2, 3]
                 @test ts == Any[1, 2, 3]
-                push!(ts, chevy)
-                @test ts == Any[1, 2, 3, chevy]
-                Chevy.enable_repl()
-                @test ts == Any[chevy, 1, 2, 3]
+                push!(ts, chevrons)
+                @test ts == Any[1, 2, 3, chevrons]
+                Chevrons.enable_repl()
+                @test ts == Any[chevrons, 1, 2, 3]
             end
         finally
             @eval Base active_repl_backend = $orig_backend
