@@ -243,6 +243,17 @@ end
 Chevrons has no dependencies so is safe to add to your global environment - then it will
 always be available at the REPL.
 
+#### Using bit-shift functions
+
+If you want to use the actual `>>`/`<<`/`>>>` bit-shifting functions in your code, you
+can do this by giving them a new name like so:
+```julia-repl
+julia> using Base: << as lshift
+
+julia> lshift(1, 10)
+1024
+```
+
 ## API
 
 See the docstrings for more help:
